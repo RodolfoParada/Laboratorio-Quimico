@@ -12,16 +12,17 @@ import { ModuleCard, FormulaDisplay, ResultMessage } from '../ModuleCard.jsx'
 import MolecularViewer3D from '../MolecularViewer3D.jsx'
 import ThermochemistryResult from '../ThermochemistryResult.jsx'
 import { MAX_ATOMS } from '../../data/constants.js'
+import usePersistentState from '../../hooks/usePersistentState.js'
 
 const ELEMENT_BY_SYMBOL = Object.fromEntries(ELEMENTS.map((element) => [element.symbol, element]))
 
-export default function SynthesisModule({ atoms, setAtoms, removeAtom, onReport }) {
-  const [result, setResult] = useState(null)
+export default function SynthesisModule({ atoms, setAtoms, removeAtom, onReport, onPersistenceError }) {
+  const [result, setResult] = usePersistentState('synthesis.result', null, onPersistenceError)
   const [isSearching, setIsSearching] = useState(false)
   const [modelState, setModelState] = useState(null)
-  const [thermoReactants, setThermoReactants] = useState('H2 + O2')
-  const [thermoProducts, setThermoProducts] = useState('H2O')
-  const [thermoResult, setThermoResult] = useState(null)
+  const [thermoReactants, setThermoReactants] = usePersistentState('synthesis.thermo-reactants', 'H2 + O2', onPersistenceError)
+  const [thermoProducts, setThermoProducts] = usePersistentState('synthesis.thermo-products', 'H2O', onPersistenceError)
+  const [thermoResult, setThermoResult] = usePersistentState('synthesis.thermo-result', null, onPersistenceError)
   const [thermoError, setThermoError] = useState(null)
 
   function clearAtoms() {

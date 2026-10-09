@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import {
   Atom,
   Beaker,
@@ -22,6 +22,7 @@ import OrganicModule from './components/modules/OrganicModule.jsx'
 import ChallengesModule from './components/modules/ChallengesModule.jsx'
 import LewisModule from './components/modules/LewisModule.jsx'
 import { MAX_ATOMS } from './data/constants.js'
+import usePersistentState from './hooks/usePersistentState.js'
 import './App.css'
 
 const TABS = [
@@ -41,11 +42,57 @@ function createModuleAtoms() {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState(TABS[0].id)
-  const [moduleAtoms, setModuleAtoms] = useState(createModuleAtoms)
+  const [persistenceErrors, setPersistenceErrors] = useState({})
+  const setPersistenceError = useCallback((key, error) => {
+    setPersistenceErrors((current) => {
+      if (error) return { ...current, [key]: error }
+      if (!Object.hasOwn(current, key)) return current
+      const next = { ...current }
+      delete next[key]
+      return next
+    })
+  }, [])
+  const [activeTab, setActiveTab] = usePersistentState(
+    'app.active-tab',
+    TABS[0].id,
+    setPersistenceError,
+    (value) => TABS.some(({ id }) => id === value),
+  )
+  const [moduleAtoms, setModuleAtoms] = usePersistentState(
+    'app.module-atoms',
+    createModuleAtoms,
+    setPersistenceError,
+    (value) =>
+      value !== null &&
+      typeof value === 'object' &&
+      TABS.every(
+        ({ id }) =>
+          Array.isArray(value[id]) &&
+          value[id].length <= MAX_ATOMS &&
+          value[id].every((symbol) => typeof symbol === 'string'),
+      ),
+  )
   const [showGuide, setShowGuide] = useState(false)
-  const [notebookEntries, setNotebookEntries] = useState([])
-  const nextNotebookEntryId = useRef(0)
+  const [notebookEntries, setNotebookEntries] = usePersistentState(
+    'app.notebook',
+    [],
+    setPersistenceError,
+    (value) =>
+      Array.isArray(value) &&
+      value.every(
+        (entry) =>
+          entry !== null &&
+          typeof entry === 'object' &&
+          Number.isSafeInteger(entry.id) &&
+          typeof entry.title === 'string' &&
+          typeof entry.details === 'string' &&
+          typeof entry.module === 'string' &&
+          typeof entry.recordedAt === 'string',
+      ),
+  )
+  const nextNotebookEntryId = useRef(
+    notebookEntries.reduce((nextId, entry) => Math.max(nextId, entry.id + 1), 0),
+  )
 
   function setAtomsFor(moduleId, nextAtoms) {
     setModuleAtoms((current) => ({
@@ -93,6 +140,7 @@ export default function App() {
     setAtoms: (nextAtoms) => setAtomsFor(moduleId, nextAtoms),
     removeAtom: (index) => removeAtomFromModule(moduleId, index),
     onReport: (entry) => recordNotebookEntry(moduleId, entry),
+    onPersistenceError: setPersistenceError,
   })
 
   return (
@@ -123,6 +171,12 @@ export default function App() {
           Imprimir / guardar PDF ({notebookEntries.length})
         </button>
       </header>
+
+      {Object.keys(persistenceErrors).length > 0 && (
+        <p className="persistence-warning" role="alert">
+          {Object.values(persistenceErrors)[0]}
+        </p>
+      )}
 
       {showGuide && (
         <aside className="guide-banner">

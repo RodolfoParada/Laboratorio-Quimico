@@ -1163,6 +1163,17 @@ button:focus-visible {
   color: #4338ca;
 }
 
+.persistence-warning {
+  margin: 12px 0 0;
+  padding: 11px 14px;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .workspace-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(390px, 0.92fr);

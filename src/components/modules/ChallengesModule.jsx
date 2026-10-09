@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Flag, RotateCw } from 'lucide-react'
 import { countsFromAtoms, formulaFromCounts } from '../../chemistry/formulas.js'
+import usePersistentState from '../../hooks/usePersistentState.js'
 import { AtomComposer, FormulaDisplay, ModuleCard, ResultMessage } from '../ModuleCard.jsx'
 
 const CHALLENGES = [
@@ -18,9 +19,19 @@ function chooseChallenge(currentFormula) {
   return choices[Math.floor(Math.random() * choices.length)]
 }
 
-export default function ChallengesModule({ atoms, setAtoms, removeAtom, onReport }) {
-  const [challenge, setChallenge] = useState(() => chooseChallenge(''))
-  const [completed, setCompleted] = useState([])
+export default function ChallengesModule({ atoms, setAtoms, removeAtom, onReport, onPersistenceError }) {
+  const [challenge, setChallenge] = usePersistentState(
+    'challenges.current',
+    () => chooseChallenge(''),
+    onPersistenceError,
+    (value) => CHALLENGES.some(({ formula }) => formula === value?.formula),
+  )
+  const [completed, setCompleted] = usePersistentState(
+    'challenges.completed',
+    [],
+    onPersistenceError,
+    (value) => Array.isArray(value) && value.every((formula) => CHALLENGES.some((item) => item.formula === formula)),
+  )
   const currentFormula = useMemo(
     () => (atoms.length ? formulaFromCounts(countsFromAtoms(atoms)) : ''),
     [atoms],

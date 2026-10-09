@@ -4,6 +4,7 @@ import { balanceEquation } from '../../chemistry/balance.js'
 import { parseFormulaList } from '../../chemistry/formulas.js'
 import { calculateStoichiometry } from '../../chemistry/stoichiometry.js'
 import { ATOMIC_MASS_REFERENCE } from '../../data/atomic-properties.js'
+import usePersistentState from '../../hooks/usePersistentState.js'
 import {
   FormulaDisplay,
   ModuleCard,
@@ -15,12 +16,12 @@ function numberEs(value, digits = 6) {
   return new Intl.NumberFormat('es-CL', { maximumFractionDigits: digits }).format(value)
 }
 
-export default function StoichiometryModule({ atoms, setAtoms, removeAtom, onReport }) {
-  const [reactantsText, setReactantsText] = useState('H2 + O2')
-  const [productsText, setProductsText] = useState('H2O')
-  const [masses, setMasses] = useState(['10', '10'])
-  const [actualProductMass, setActualProductMass] = useState('')
-  const [result, setResult] = useState(null)
+export default function StoichiometryModule({ atoms, setAtoms, removeAtom, onReport, onPersistenceError }) {
+  const [reactantsText, setReactantsText] = usePersistentState('stoichiometry.reactants', 'H2 + O2', onPersistenceError)
+  const [productsText, setProductsText] = usePersistentState('stoichiometry.products', 'H2O', onPersistenceError)
+  const [masses, setMasses] = usePersistentState('stoichiometry.masses', ['10', '10'], onPersistenceError)
+  const [actualProductMass, setActualProductMass] = usePersistentState('stoichiometry.actual-product-mass', '', onPersistenceError)
+  const [result, setResult] = usePersistentState('stoichiometry.result', null, onPersistenceError)
   const [error, setError] = useState(null)
 
   function calculate() {

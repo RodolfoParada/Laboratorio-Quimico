@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Beaker } from 'lucide-react'
 import { ATOMIC_MASS_REFERENCE } from '../../data/atomic-properties.js'
 import { calculateSolution } from '../../chemistry/solutions.js'
+import usePersistentState from '../../hooks/usePersistentState.js'
 import {
   formulaFromCounts,
   countsFromAtoms,
@@ -14,20 +15,20 @@ function numberEs(value, digits = 6) {
   return new Intl.NumberFormat('es-CL', { maximumFractionDigits: digits }).format(value)
 }
 
-export default function SolutionsModule({ atoms, setAtoms, removeAtom, onReport }) {
-  const [manualFormula, setManualFormula] = useState('NaCl')
-  const [soluteMass, setSoluteMass] = useState('10')
-  const [solventMass, setSolventMass] = useState('100')
-  const [solutionVolume, setSolutionVolume] = useState('250')
-  const [soluteVolume, setSoluteVolume] = useState('')
-  const [solventVolume, setSolventVolume] = useState('')
-  const [vanthoffFactor, setVanthoffFactor] = useState('1')
-  const [freezingPoint, setFreezingPoint] = useState('0')
-  const [boilingPoint, setBoilingPoint] = useState('100')
-  const [freezingConstant, setFreezingConstant] = useState('1.86')
-  const [boilingConstant, setBoilingConstant] = useState('0.512')
-  const [solubility, setSolubility] = useState('')
-  const [result, setResult] = useState(null)
+export default function SolutionsModule({ atoms, setAtoms, removeAtom, onReport, onPersistenceError }) {
+  const [manualFormula, setManualFormula] = usePersistentState('solutions.formula', 'NaCl', onPersistenceError)
+  const [soluteMass, setSoluteMass] = usePersistentState('solutions.solute-mass', '10', onPersistenceError)
+  const [solventMass, setSolventMass] = usePersistentState('solutions.solvent-mass', '100', onPersistenceError)
+  const [solutionVolume, setSolutionVolume] = usePersistentState('solutions.solution-volume', '250', onPersistenceError)
+  const [soluteVolume, setSoluteVolume] = usePersistentState('solutions.solute-volume', '', onPersistenceError)
+  const [solventVolume, setSolventVolume] = usePersistentState('solutions.solvent-volume', '', onPersistenceError)
+  const [vanthoffFactor, setVanthoffFactor] = usePersistentState('solutions.vanthoff-factor', '1', onPersistenceError)
+  const [freezingPoint, setFreezingPoint] = usePersistentState('solutions.freezing-point', '0', onPersistenceError)
+  const [boilingPoint, setBoilingPoint] = usePersistentState('solutions.boiling-point', '100', onPersistenceError)
+  const [freezingConstant, setFreezingConstant] = usePersistentState('solutions.freezing-constant', '1.86', onPersistenceError)
+  const [boilingConstant, setBoilingConstant] = usePersistentState('solutions.boiling-constant', '0.512', onPersistenceError)
+  const [solubility, setSolubility] = usePersistentState('solutions.solubility', '', onPersistenceError)
+  const [result, setResult] = usePersistentState('solutions.result', null, onPersistenceError)
   const [error, setError] = useState(null)
 
   const selectedFormula = atoms.length ? formulaFromCounts(countsFromAtoms(atoms)) : manualFormula
