@@ -35,6 +35,10 @@ pnpm run build
 pnpm run preview
 ```
 
+## Publicar en GitHub Pages
+
+El workflow `.github/workflows/deploy.yml` compila la aplicación con Vite y publica `dist` en GitHub Pages al hacer push a `main`. En **Settings → Pages → Build and deployment**, selecciona **GitHub Actions** como fuente; no uses “Deploy from a branch” con `/docs`, ya que este proyecto no contiene esa carpeta ni es un sitio Jekyll.
+
 ## Persistencia de datos
 
 La aplicación guarda en `localStorage` el trabajo de cada módulo, los átomos de cada matraz, los resultados y el progreso de los retos, además de las entradas del cuaderno y la última pestaña abierta. Los datos se restauran automáticamente al volver a abrir la aplicación en el mismo navegador y perfil. No se sincronizan entre dispositivos ni entre navegadores. Si el navegador bloquea el almacenamiento o se queda sin espacio, la aplicación muestra un aviso; en ese caso los cambios solo duran hasta cerrar o recargar la página.

@@ -43,7 +43,6 @@ export default function usePersistentState(
 ) {
   const [initial] = useState(() => readPersistentValue(key, initialValue, undefined, validate))
   const [value, setValue] = useState(initial.value)
-  const [storageError, setStorageError] = useState(initial.error)
   const onPersistenceErrorRef = useRef(onPersistenceError)
   const initialErrorRef = useRef(initial.error)
 
@@ -54,21 +53,16 @@ export default function usePersistentState(
   useEffect(() => {
     const error = writePersistentValue(key, value)
     if (error) {
-      setStorageError(error)
       onPersistenceErrorRef.current?.(key, error)
       return
     }
     if (initialErrorRef.current) {
-      setStorageError(initialErrorRef.current)
       onPersistenceErrorRef.current?.(key, initialErrorRef.current)
       initialErrorRef.current = null
       return
     }
-    if (storageError) {
-      setStorageError(null)
-      onPersistenceErrorRef.current?.(key, null)
-    }
-  }, [key, value, storageError])
+    onPersistenceErrorRef.current?.(key, null)
+  }, [key, value])
 
   return [value, setValue]
 }
