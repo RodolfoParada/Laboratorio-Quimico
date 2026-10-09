@@ -1,7 +1,7 @@
-import { useState } from 'react'
 import { Scale } from 'lucide-react'
 import { balanceEquation, validateEquationAnswer } from '../../chemistry/balance.js'
 import { parseFormulaList } from '../../chemistry/formulas.js'
+import usePersistentState from '../../hooks/usePersistentState.js'
 import { FormulaDisplay, ModuleCard, ReactionFormulaEditor, ResultMessage } from '../ModuleCard.jsx'
 
 function formatEquation(side, coefficients) {
@@ -15,13 +15,13 @@ function formatEquation(side, coefficients) {
     ))
 }
 
-export default function EquationBalancerModule({ atoms, setAtoms, removeAtom, onReport }) {
-  const [reactantsText, setReactantsText] = useState('H2 + O2')
-  const [productsText, setProductsText] = useState('H2O')
-  const [suggested, setSuggested] = useState(null)
-  const [reactantCoefficients, setReactantCoefficients] = useState([])
-  const [productCoefficients, setProductCoefficients] = useState([])
-  const [feedback, setFeedback] = useState(null)
+export default function EquationBalancerModule({ atoms, setAtoms, removeAtom, onReport, onPersistenceError }) {
+  const [reactantsText, setReactantsText] = usePersistentState('balancer.reactants', 'H2 + O2', onPersistenceError)
+  const [productsText, setProductsText] = usePersistentState('balancer.products', 'H2O', onPersistenceError)
+  const [suggested, setSuggested] = usePersistentState('balancer.suggested', null, onPersistenceError)
+  const [reactantCoefficients, setReactantCoefficients] = usePersistentState('balancer.reactant-coefficients', [], onPersistenceError)
+  const [productCoefficients, setProductCoefficients] = usePersistentState('balancer.product-coefficients', [], onPersistenceError)
+  const [feedback, setFeedback] = usePersistentState('balancer.feedback', null, onPersistenceError)
 
   function resetAnswer() {
     setSuggested(null)

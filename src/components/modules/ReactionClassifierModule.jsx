@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { FlaskConical, Sparkles } from 'lucide-react'
 import { classifyBalancedReaction } from '../../chemistry/reactions.js'
 import { parseFormulaList } from '../../chemistry/formulas.js'
+import usePersistentState from '../../hooks/usePersistentState.js'
 import { FormulaDisplay, ModuleCard, ReactionFormulaEditor, ResultMessage } from '../ModuleCard.jsx'
 import ThermochemistryResult from '../ThermochemistryResult.jsx'
 
-export default function ReactionClassifierModule({ atoms, setAtoms, removeAtom, onReport }) {
-  const [reactantsText, setReactantsText] = useState('Zn + HCl')
-  const [productsText, setProductsText] = useState('ZnCl2 + H2')
-  const [result, setResult] = useState(null)
+export default function ReactionClassifierModule({ atoms, setAtoms, removeAtom, onReport, onPersistenceError }) {
+  const [reactantsText, setReactantsText] = usePersistentState('reactions.reactants', 'Zn + HCl', onPersistenceError)
+  const [productsText, setProductsText] = usePersistentState('reactions.products', 'ZnCl2 + H2', onPersistenceError)
+  const [result, setResult] = usePersistentState('reactions.result', null, onPersistenceError)
   const [error, setError] = useState(null)
 
   function classify() {

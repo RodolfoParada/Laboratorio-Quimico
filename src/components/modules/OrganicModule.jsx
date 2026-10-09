@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { GitBranch } from 'lucide-react'
 import {
   areGraphsIsomorphic,
@@ -10,15 +10,21 @@ import {
   validateValences,
 } from '../../chemistry/organic.js'
 import { AtomComposer, FormulaDisplay, ModuleCard, ResultMessage } from '../ModuleCard.jsx'
+import usePersistentState from '../../hooks/usePersistentState.js'
 
-export default function OrganicModule({ atoms, setAtoms, onReport }) {
-  const [bonds, setBonds] = useState([])
-  const [fromNode, setFromNode] = useState('0')
-  const [toNode, setToNode] = useState('1')
-  const [bondOrder, setBondOrder] = useState('1')
-  const [savedStructures, setSavedStructures] = useState([])
-  const [feedback, setFeedback] = useState(null)
-  const nextStructureId = useRef(0)
+export default function OrganicModule({ atoms, setAtoms, onReport, onPersistenceError }) {
+  const [bonds, setBonds] = usePersistentState('organic.bonds', [], onPersistenceError)
+  const [fromNode, setFromNode] = usePersistentState('organic.from-node', '0', onPersistenceError)
+  const [toNode, setToNode] = usePersistentState('organic.to-node', '1', onPersistenceError)
+  const [bondOrder, setBondOrder] = usePersistentState('organic.bond-order', '1', onPersistenceError)
+  const [savedStructures, setSavedStructures] = usePersistentState('organic.saved-structures', [], onPersistenceError)
+  const [feedback, setFeedback] = usePersistentState('organic.feedback', null, onPersistenceError)
+  const nextStructureId = useRef(
+    savedStructures.reduce((nextId, structure) => {
+      const match = /^structure-(\d+)$/.exec(structure.id)
+      return match ? Math.max(nextId, Number(match[1]) + 1) : nextId
+    }, 0),
+  )
   const valences = validateValences(atoms, bonds)
   const invalidValences = valences.filter((item) => !item.valid)
   const formula = atoms.length ? formatGraphFormula(atoms) : ''

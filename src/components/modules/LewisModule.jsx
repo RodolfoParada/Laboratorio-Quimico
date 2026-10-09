@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { PencilRuler } from 'lucide-react'
 import { analyzeLewisStructure } from '../../chemistry/organic.js'
 import { countsFromAtoms, formulaFromCounts } from '../../chemistry/formulas.js'
+import usePersistentState from '../../hooks/usePersistentState.js'
 import { AtomComposer, ModuleCard, ResultMessage } from '../ModuleCard.jsx'
 
 const CANVAS_WIDTH = 640
@@ -19,12 +20,12 @@ function electronPosition(index, count) {
   return { x: 31 * Math.cos(angle), y: 31 * Math.sin(angle) }
 }
 
-export default function LewisModule({ atoms, setAtoms, onReport }) {
-  const [bonds, setBonds] = useState([])
-  const [fromNode, setFromNode] = useState('0')
-  const [toNode, setToNode] = useState('1')
-  const [bondOrder, setBondOrder] = useState('1')
-  const [positions, setPositions] = useState([])
+export default function LewisModule({ atoms, setAtoms, onReport, onPersistenceError }) {
+  const [bonds, setBonds] = usePersistentState('lewis.bonds', [], onPersistenceError)
+  const [fromNode, setFromNode] = usePersistentState('lewis.from-node', '0', onPersistenceError)
+  const [toNode, setToNode] = usePersistentState('lewis.to-node', '1', onPersistenceError)
+  const [bondOrder, setBondOrder] = usePersistentState('lewis.bond-order', '1', onPersistenceError)
+  const [positions, setPositions] = usePersistentState('lewis.positions', [], onPersistenceError)
   const [feedback, setFeedback] = useState(null)
   const svgRef = useRef(null)
   const draggingNode = useRef(null)

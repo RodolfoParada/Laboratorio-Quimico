@@ -37,7 +37,7 @@ pnpm run preview
 
 ## Persistencia de datos
 
-Actualmente la aplicación **no utiliza `localStorage` ni una base de datos**. Las composiciones, entradas, resultados y avances se conservan temporalmente en el estado de la página: cambiar de pestaña dentro de la aplicación mantiene el trabajo, pero recargar o cerrar la página lo borra. El cuaderno también es temporal y solo reúne resultados registrados en la sesión actual.
+La aplicación guarda en `localStorage` el trabajo de cada módulo, los átomos de cada matraz, los resultados y el progreso de los retos, además de las entradas del cuaderno y la última pestaña abierta. Los datos se restauran automáticamente al volver a abrir la aplicación en el mismo navegador y perfil. No se sincronizan entre dispositivos ni entre navegadores. Si el navegador bloquea el almacenamiento o se queda sin espacio, la aplicación muestra un aviso; en ese caso los cambios solo duran hasta cerrar o recargar la página.
 
 ## Alcance y consideraciones
 
