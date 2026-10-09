@@ -44,3 +44,14 @@ La aplicación guarda en `localStorage` el trabajo de cada módulo, los átomos 
 El simulador es una herramienta educativa, no un predictor químico universal. Los módulos cubren familias y reglas específicas; una fórmula encontrada en PubChem no demuestra que una reacción ocurra. Las búsquedas en PubChem requieren conexión a internet. El visualizador 3D usa datos del conformero publicado, si está disponible; no inventa geometrías cuando faltan coordenadas.
 
 El balanceador verifica la conservación de los átomos, pero su búsqueda automática está acotada. Las masas atómicas son valores de referencia, las cantidades presentadas pueden estar redondeadas y los resultados estequiométricos y de soluciones dependen de los datos y supuestos introducidos. Lewis aplica una comprobación didáctica limitada y la consulta termoquímica solo cubre las reacciones tabuladas en la aplicación. Consulta [SPEC.md](./SPEC.md) para más detalles sobre métodos, referencias y límites.
+
+
+
+## 👨‍💻 Autor
+
+**Rodolfo Parada**
+* **Rol:** Desarrollador Full Stack
+* **Portafolio / Contacto:** [titioweb.com](https://www.linkedin.com/in/rodolfo-parada/)
+
+---
+*Si este proyecto te resultó útil para aprender o simular reacciones químicas, ¡no olvides darle una ⭐ al repositorio!*
